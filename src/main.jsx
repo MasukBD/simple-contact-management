@@ -26,7 +26,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/allContacts",
-        element: <AllContacts></AllContacts>
+        element: <AllContacts></AllContacts>,
+        loader: () => fetch('http://localhost:5000/users')
       }
     ]
   },

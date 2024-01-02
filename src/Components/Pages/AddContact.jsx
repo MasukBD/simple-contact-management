@@ -6,6 +6,7 @@ import PhoneInputWithCountry from 'react-phone-number-input/react-hook-form';
 import './CustomStyle.css';
 import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOST_KEY;
 
 const AddContact = () => {
@@ -39,13 +40,17 @@ const AddContact = () => {
                 if (imageResponse.success) {
                     const photoURL = imageResponse.data.display_url;
                     const userData = { name: data.name, email: data.email, phoneNumber: data.phoneInput, address: data.address, photoURL: photoURL };
-                    console.log(userData);
-                    Toast.fire({
-                        icon: "success",
-                        title: "User Added Successfully!"
-                    });
-                    reset();
-                    setLoader(false)
+                    axios.post('http://localhost:5000/users', userData)
+                        .then(res => {
+                            if (res.data.insertedId) {
+                                Toast.fire({
+                                    icon: "success",
+                                    title: "User Added Successfully!"
+                                });
+                                reset();
+                                setLoader(false);
+                            }
+                        })
                 }
             })
     }
