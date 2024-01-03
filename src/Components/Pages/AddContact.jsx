@@ -100,7 +100,7 @@ const AddContact = () => {
                         </div>
                     </div>
                     <div className='text-center'>
-                        <button disabled={loader} className='mt-6'><input className='bg-blue-700 hover:bg-[#252958] uppercase text-white font-semibold p-2 rounded-md' type="submit" value={loader ? "Item Adding..." : "Add To Contact"} /></button>
+                        <button disabled={loader} className='mt-6 mb-5'><input className='bg-blue-700 hover:bg-[#252958] uppercase text-white font-semibold p-2 rounded-md' type="submit" value={loader ? "Item Adding..." : "Add To Contact"} /></button>
                     </div>
                 </form>
             </div>

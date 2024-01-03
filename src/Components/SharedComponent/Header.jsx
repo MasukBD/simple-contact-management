@@ -13,7 +13,7 @@ const Header = () => {
         <div className='bg-[#252958] text-white sticky top-0 z-10'>
             <div className="navbar w-11/12 mx-auto">
                 <div className="navbar-start">
-                    <Link><span className='font-bold'>CONTACT MANAGEMENT</span></Link>
+                    <Link><span className='font-bold hover:text-blue-900'>CONTACT MANAGEMENT</span></Link>
                 </div>
                 <div className="navbar-end">
                     <div className="dropdown">
