@@ -40,7 +40,7 @@ const AddContact = () => {
                 if (imageResponse.success) {
                     const photoURL = imageResponse.data.display_url;
                     const userData = { name: data.name, email: data.email, phoneNumber: data.phoneInput, address: data.address, photoURL: photoURL };
-                    axios.post('http://localhost:5000/users', userData)
+                    axios.post('https://contact-management-server-theta.vercel.app/users', userData)
                         .then(res => {
                             if (res.data.insertedId) {
                                 Toast.fire({

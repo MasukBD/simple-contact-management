@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import PhoneInput from 'react-phone-number-input';
 import { isPossiblePhoneNumber } from 'react-phone-number-input';
 import toast from 'react-hot-toast';
+import { DNA } from 'react-loader-spinner';
 const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOST_KEY;
 
 const AllContacts = () => {
@@ -21,7 +22,7 @@ const AllContacts = () => {
     const { data: users = [], refetch, isLoading } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
-            const res = await axios.get('http://localhost:5000/users')
+            const res = await axios.get('https://contact-management-server-theta.vercel.app/users')
             return res.data;
         }
     });
@@ -53,7 +54,7 @@ const AllContacts = () => {
                     if (data.success) {
                         const updatedPhoto = data.data.display_url;
                         const updatedData = { name, email, phoneNumber: phone, address, photoURL: updatedPhoto }
-                        axios.put(`http://localhost:5000/users/${updateUser?._id}`, updatedData)
+                        axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData)
                             .then(res => {
                                 if (res.status === 200) {
                                     toast.success('Updated Successfully!');
@@ -66,7 +67,7 @@ const AllContacts = () => {
         }
         else {
             const updatedData = { name, email, phoneNumber: phone, address, photoURL: updateUser?.photoURL }
-            axios.put(`http://localhost:5000/users/${updateUser?._id}`, updatedData)
+            axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData)
                 .then(res => {
                     if (res.status === 200) {
                         toast.success('Updated Successfully!');
@@ -88,7 +89,7 @@ const AllContacts = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:5000/users/${id}`, { method: "DELETE" })
+                fetch(`https://contact-management-server-theta.vercel.app/users/${id}`, { method: "DELETE" })
                     .then(res => res.json())
                     .then(data => {
                         if (data.deletedCount) {
@@ -106,6 +107,12 @@ const AllContacts = () => {
             }
         });
     }
+
+    if (isLoading) {
+        return <div className='h-screen flex items-center justify-center'><DNA visible={true} height="80" width="80" ariaLabel="dna-loading" wrapperStyle={{}} wrapperClass="dna-wrapper" /></div>
+
+    }
+
     return (
         <>
             <Helmet><title>All Contacts - Contact - Management - System</title></Helmet>

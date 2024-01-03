@@ -22,6 +22,7 @@
     "react-helmet-async": "^2.0.4",
     "react-hook-form": "^7.49.2",
     "react-hot-toast": "^2.4.1",
+    "react-loader-spinner": "^6.1.6",
     "react-phone-number-input": "^3.3.8",
     "react-router-dom": "^6.21.1",
     "sort-by": "^1.2.0",
