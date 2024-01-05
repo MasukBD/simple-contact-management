@@ -15,14 +15,20 @@ const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOST_KEY;
 const AllContacts = () => {
     const [updateUser, setUpdateUser] = useState(null);
     const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const token = localStorage.getItem('access-token');
+    const headers = {
+        'content-type': 'application/json',
+        authorization: `bearer ${token}`
+    }
 
     const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageHostingApiKey}`;
 
     const [phoneValue, setPhoneValue] = useState(updateUser?.phoneNumber)
     const { data: users = [], refetch, isLoading } = useQuery({
-        queryKey: ['users'],
+        queryKey: ['users', searchQuery && searchQuery],
         queryFn: async () => {
-            const res = await axios.get('https://contact-management-server-theta.vercel.app/users')
+            const res = await axios.get(`https://contact-management-server-theta.vercel.app/users?search=${searchQuery}`, { headers })
             return res.data;
         }
     });
@@ -54,7 +60,7 @@ const AllContacts = () => {
                     if (data.success) {
                         const updatedPhoto = data.data.display_url;
                         const updatedData = { name, email, phoneNumber: phone, address, photoURL: updatedPhoto }
-                        axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData)
+                        axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData, { headers })
                             .then(res => {
                                 if (res.status === 200) {
                                     toast.success('Updated Successfully!');
@@ -67,7 +73,7 @@ const AllContacts = () => {
         }
         else {
             const updatedData = { name, email, phoneNumber: phone, address, photoURL: updateUser?.photoURL }
-            axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData)
+            axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData, { headers })
                 .then(res => {
                     if (res.status === 200) {
                         toast.success('Updated Successfully!');
@@ -89,7 +95,12 @@ const AllContacts = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`https://contact-management-server-theta.vercel.app/users/${id}`, { method: "DELETE" })
+                fetch(`https://contact-management-server-theta.vercel.app/users/${id}`, {
+                    method: "DELETE", headers: {
+                        'content-type': 'application/json',
+                        authorization: `bearer ${token}`
+                    }
+                })
                     .then(res => res.json())
                     .then(data => {
                         if (data.deletedCount) {
@@ -106,17 +117,22 @@ const AllContacts = () => {
                     })
             }
         });
-    }
+    };
 
-    if (isLoading) {
-        return <div className='h-screen flex items-center justify-center'><DNA visible={true} height="80" width="80" ariaLabel="dna-loading" wrapperStyle={{}} wrapperClass="dna-wrapper" /></div>
-
-    }
+    const handleSearch = (event) => {
+        setSearchQuery(event.target.value);
+    };
 
     return (
         <>
             <Helmet><title>All Contacts - Contact - Management - System</title></Helmet>
             <Heading subHeading={'Connectify - SyncMingle'} heading={'All Contacts'}></Heading>
+            <div className='my-10 flex justify-center items-center'>
+                <div className="join">
+                    <input type='text' onChange={handleSearch} className="input input-bordered join-item" placeholder="Phone Number" />
+                    <button className="btn btn-primary join-item rounded">Search</button>
+                </div>
+            </div>
             {
                 users.length <= 0 && <h1 className='text-3xl font-bold text-red-500 text-center my-10'>No User Added Yet!</h1>
             }

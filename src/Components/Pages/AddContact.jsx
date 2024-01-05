@@ -11,6 +11,11 @@ const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOST_KEY;
 
 const AddContact = () => {
     const [loader, setLoader] = useState(false);
+    const token = localStorage.getItem('access-token');
+    const headers = {
+        'content-type': 'application/json',
+        authorization: `bearer ${token}`
+    }
 
     const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageHostingApiKey}`;
 
@@ -40,7 +45,7 @@ const AddContact = () => {
                 if (imageResponse.success) {
                     const photoURL = imageResponse.data.display_url;
                     const userData = { name: data.name, email: data.email, phoneNumber: data.phoneInput, address: data.address, photoURL: photoURL };
-                    axios.post('https://contact-management-server-theta.vercel.app/users', userData)
+                    axios.post('https://contact-management-server-theta.vercel.app/users', userData, { headers })
                         .then(res => {
                             if (res.data.insertedId) {
                                 Toast.fire({
@@ -58,7 +63,7 @@ const AddContact = () => {
         <div className='p-2'>
             <Helmet><title>Add Contacts - Contact - Management - System</title></Helmet>
             <Heading subHeading={'Connectify - SyncMingle'} heading={'Add Contacts'}></Heading>
-            <div className='my-5 md:w-10/12 mx-auto bg-blue-200 rounded-md'>
+            <div className='mt-5 mb-4 md:mt-12 md:w-10/12 mx-auto bg-blue-200 rounded-md'>
                 <form onSubmit={handleSubmit(onSubmit)} className='p-2 space-y-3'>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
                         <div>

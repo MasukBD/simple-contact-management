@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Lottie from "lottie-react";
 import animation from '../../assets/animation.json';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import CustomAnimation from '../SharedComponent/CustomAnimation';
+import { AuthContext } from '../../Provider/AuthProvider';
+import { DNA } from 'react-loader-spinner';
 
 
 const HomePage = () => {
+    const { loading } = useContext(AuthContext);
+    if (loading) {
+        return <div className='h-screen flex items-center justify-center'><DNA visible={true} height="80" width="80" ariaLabel="dna-loading" wrapperStyle={{}} wrapperClass="dna-wrapper" /></div>
+    }
     return (
         <>
             <Helmet><title>Home - Contact - Managements - System</title></Helmet>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-5 min-h-screen'>
-                <div className='flex flex-col justify-center w-full my-10 lg:w-10/12 mx-auto space-y-2 p-2'>
+                <div className='flex flex-col justify-center w-full my-10 lg:w-10/12 mx-auto space-y-2 p-2 order-2 md:order-1'>
                     <CustomAnimation>
                         <h1 className='text-3xl md:text-5xl font-bold'><span className='text-pink-700'>Connect</span>,<span className='text-pink-800'> Collaborate</span>,<span className='text-[#252958]'> Conquer</span>: Your Ultimate Contact Management Solution!</h1>
                         <p className='text-sm text-blue-800'>Effortless Connections, Seamless Management: Your Contacts, Your Way!</p>
@@ -22,7 +28,7 @@ const HomePage = () => {
                         </div>
                     </CustomAnimation>
                 </div>
-                <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center order-1 md:order-2'>
                     <Lottie animationData={animation} loop={true} />
                 </div>
             </div>

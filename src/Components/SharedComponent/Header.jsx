@@ -1,12 +1,44 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { AuthContext } from '../../Provider/AuthProvider';
+import toast from 'react-hot-toast';
+import { FaRegUserCircle, FaSignOutAlt } from "react-icons/fa";
 
 const Header = () => {
+    const { user, logOut } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logOut()
+            .then(() => {
+                toast.success("logout Successfully!");
+            })
+            .catch(error => {
+                toast.error(`${error.message}`);
+            })
+    }
 
     const navItems = <>
         <li><NavLink to="/" className={({ isActive }) => (isActive ? 'active' : 'default')}>Home</NavLink></li>
         <li><NavLink to="/addContact" className={({ isActive }) => (isActive ? 'active' : 'default')}>Add&nbsp;Contacts</NavLink></li>
         <li><NavLink to="/allContacts" className={({ isActive }) => (isActive ? 'active' : 'default')}>All&nbsp;Contacts</NavLink></li>
+        {
+            user && < li className='lg:hidden'><button onClick={handleLogout} className='default flex gap-0.5 items-center'><FaSignOutAlt></FaSignOutAlt> LogOut</button></li>
+        }
+        {
+            user ?
+                <li className='p-0.5 md:p-2 dropdown'>
+                    <label tabIndex={0}>
+                        {
+                            user?.photoURL ? <img title={user?.displayName} className='w-10 rounded-full' src={user?.photoURL} alt="profile photo" /> : <FaRegUserCircle className='text-3xl' title={user?.displayName}></FaRegUserCircle>
+                        }
+                    </label>
+                    <ul className="bg-blue-600 mt-4 bg-opacity-80 hidden lg:block dropdown-content p-2 z-10 shadow rounded">
+                        <li><button onClick={handleLogout} className='font-bold hover:text-black flex gap-0.5 items-center'><FaSignOutAlt></FaSignOutAlt> LogOut</button></li>
+                    </ul>
+                </li>
+                :
+                <li><NavLink to="/login" className={({ isActive }) => (isActive ? 'active' : 'default')}>Login</NavLink></li>
+        }
     </>
 
     return (
