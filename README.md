@@ -12,6 +12,9 @@ This is a contact management web application that allows users to add, view, upd
 - [Usage](#usage)
 - [Contact Management](#contact-management)
 - [Home Page](#home-page)
+- [Search Functionality](#search-functionality)
+- [Authentication with Firebase](#authentication-with-firebase)
+- [API Security with JWT](#api-security-with-jwt)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [License](#license)
@@ -41,6 +44,15 @@ This is a contact management web application that allows users to add, view, upd
 
 - Update contact details through a modal.
 
+### Authentication with Firebase:
+
+- Users can register and login via email/password.
+- Users can log in using their Google account.
+
+### API Security with JWT:
+
+- Secure the API with JSON Web Tokens (JWT) for authentication.
+
 ## Technical Requirements
 
 ### Backend:
@@ -62,10 +74,15 @@ This is a contact management web application that allows users to add, view, upd
 
 1. Open the application in your browser.
 2. By default you will be in Home page.
-3. Use the navigation bar to switch between "Home," "Add Contacts," and "All Contacts" pages.
+3. Use the navigation bar to switch between "Home," "Add Contacts," "All Contacts," "Login," and "Register" pages.
 4. On the Home page, use the buttons to navigate to "Add Contacts" or "All Contacts."
 5. Add contacts with the required details on the "Add Contacts" page.
 6. View, update, or delete contacts on the "All Contacts" page.
+7. Use the login and register pages for authentication.
+
+## Search Functionality
+
+- On the "All Contacts" page, users can search for contact cards using mobile numbers.
 
 ## Contact Management
 
