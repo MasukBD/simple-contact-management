@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Heading from '../SharedComponent/Heading';
 import { Helmet } from 'react-helmet-async';
 import ContactCard from '../SharedComponent/ContactCard';
@@ -10,10 +10,12 @@ import PhoneInput from 'react-phone-number-input';
 import { isPossiblePhoneNumber } from 'react-phone-number-input';
 import toast from 'react-hot-toast';
 import { DNA } from 'react-loader-spinner';
+import { AuthContext } from '../../Provider/AuthProvider';
 const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOST_KEY;
 
 const AllContacts = () => {
-    const [updateUser, setUpdateUser] = useState(null);
+    const [updateContact, setUpdateContact] = useState(null);
+    const { loading } = useContext(AuthContext);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const token = localStorage.getItem('access-token');
@@ -24,17 +26,18 @@ const AllContacts = () => {
 
     const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageHostingApiKey}`;
 
-    const [phoneValue, setPhoneValue] = useState(updateUser?.phoneNumber)
-    const { data: users = [], refetch, isLoading } = useQuery({
-        queryKey: ['users', searchQuery && searchQuery],
+    const [phoneValue, setPhoneValue] = useState(updateContact?.phoneNumber)
+    const { data: contacts = [], refetch, isLoading } = useQuery({
+        queryKey: ['contacts', searchQuery && searchQuery],
+        enabled: !loading,
         queryFn: async () => {
-            const res = await axios.get(`https://contact-management-server-theta.vercel.app/users?search=${searchQuery}`, { headers })
+            const res = await axios.get(`https://contact-management-server-theta.vercel.app/contacts?search=${searchQuery}`, { headers })
             return res.data;
         }
     });
 
-    const handleUpdateUser = user => {
-        setUpdateUser(user);
+    const handleUpdateContact = user => {
+        setUpdateContact(user);
         document.getElementById('my_modal').showModal();
     };
 
@@ -60,7 +63,7 @@ const AllContacts = () => {
                     if (data.success) {
                         const updatedPhoto = data.data.display_url;
                         const updatedData = { name, email, phoneNumber: phone, address, photoURL: updatedPhoto }
-                        axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData, { headers })
+                        axios.put(`https://contact-management-server-theta.vercel.app/contacts/${updateContact?._id}`, updatedData, { headers })
                             .then(res => {
                                 if (res.status === 200) {
                                     toast.success('Updated Successfully!');
@@ -72,8 +75,8 @@ const AllContacts = () => {
                 })
         }
         else {
-            const updatedData = { name, email, phoneNumber: phone, address, photoURL: updateUser?.photoURL }
-            axios.put(`https://contact-management-server-theta.vercel.app/users/${updateUser?._id}`, updatedData, { headers })
+            const updatedData = { name, email, phoneNumber: phone, address, photoURL: updateContact?.photoURL }
+            axios.put(`https://contact-management-server-theta.vercel.app/contacts/${updateContact?._id}`, updatedData, { headers })
                 .then(res => {
                     if (res.status === 200) {
                         toast.success('Updated Successfully!');
@@ -84,7 +87,7 @@ const AllContacts = () => {
         }
     }
 
-    const handleDeleteUser = id => {
+    const handleDeleteContact = id => {
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -95,7 +98,7 @@ const AllContacts = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`https://contact-management-server-theta.vercel.app/users/${id}`, {
+                fetch(`https://contact-management-server-theta.vercel.app/contacts/${id}`, {
                     method: "DELETE", headers: {
                         'content-type': 'application/json',
                         authorization: `bearer ${token}`
@@ -134,11 +137,21 @@ const AllContacts = () => {
                 </div>
             </div>
             {
-                users.length <= 0 && <h1 className='text-3xl font-bold text-red-500 text-center my-10'>No User Added Yet!</h1>
+                isLoading && <div className='flex justify-center my-3'><DNA
+                    visible={true}
+                    height="80"
+                    width="80"
+                    ariaLabel="dna-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="dna-wrapper"
+                /></div>
+            }
+            {
+                contacts.length <= 0 && isLoading === false && <h1 className='text-3xl font-bold text-red-500 text-center my-10'>No User Added Yet!</h1>
             }
             <div className='my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:w-10/12 mx-auto p-2'>
                 {
-                    [...users].reverse().map(user => <ContactCard handleDelete={handleDeleteUser} handleUpdate={handleUpdateUser} key={user._id} user={user}></ContactCard>)
+                    [...contacts].reverse().map(contact => <ContactCard handleDelete={handleDeleteContact} handleUpdate={handleUpdateContact} key={contact._id} contact={contact}></ContactCard>)
                 }
             </div>
             <dialog id="my_modal" className="modal">
@@ -149,7 +162,7 @@ const AllContacts = () => {
                             <div className='w-full flex flex-col items-center'>
                                 <div>
                                     <label className='font-semibold mb-1'>Current Photo</label>
-                                    <img className='w-40 rounded-full' src={updateUser && updateUser.photoURL} alt="" />
+                                    <img className='w-40 rounded-full' src={updateContact && updateContact.photoURL} alt="" />
                                 </div>
                                 <div className='my-3'>
                                     <label><span className='font-semibold'>Upload New Photo</span> <span className='text-black'>*</span></label><br />
@@ -159,11 +172,11 @@ const AllContacts = () => {
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
                                 <div>
                                     <label><span className='font-semibold'>Name</span> <span className='text-red-500'>*</span></label><br />
-                                    <input required defaultValue={updateUser?.name} className='w-full p-2 rounded-md' placeholder='Your Name' type="text" name='name' id="name" />
+                                    <input required defaultValue={updateContact?.name} className='w-full p-2 rounded-md' placeholder='Your Name' type="text" name='name' id="name" />
                                 </div>
                                 <div>
                                     <label><span className='font-semibold'>Email</span> <span className='text-black'>*</span></label><br />
-                                    <input defaultValue={updateUser && updateUser.email} className='w-full p-2 rounded-md' placeholder='Your Email' type="email" name='email' id="email" />
+                                    <input defaultValue={updateContact && updateContact.email} className='w-full p-2 rounded-md' placeholder='Your Email' type="email" name='email' id="email" />
                                 </div>
                             </div>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
@@ -181,7 +194,7 @@ const AllContacts = () => {
                                 </div>
                                 <div>
                                     <label><span className='font-semibold'>Address</span> <span className='text-red-500'>*</span></label><br />
-                                    <input required defaultValue={updateUser && updateUser.address} className='w-full p-2 rounded-md' placeholder='Write Address Here' name='address' type="text" id="address" />
+                                    <input required defaultValue={updateContact && updateContact.address} className='w-full p-2 rounded-md' placeholder='Write Address Here' name='address' type="text" id="address" />
                                 </div>
                             </div>
                             <div className='text-center'>

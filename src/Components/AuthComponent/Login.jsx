@@ -7,6 +7,7 @@ import { LoadCanvasTemplate, loadCaptchaEnginge, validateCaptcha } from 'react-s
 import { useForm } from 'react-hook-form';
 import { AuthContext } from '../../Provider/AuthProvider';
 import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 const Login = () => {
     const [error, setError] = useState('');
@@ -36,6 +37,48 @@ const Login = () => {
             .catch(error => {
                 setError(`${error.message}`);
             })
+    };
+
+    const handleForgetPassword = async () => {
+        const { value: email } = await Swal.fire({
+            title: "Enter Your Account Email",
+            input: "email",
+            inputLabel: "Your email address",
+            inputPlaceholder: "Enter your email address"
+        });
+        if (email) {
+            passwordReset(email)
+                .then(() => {
+                    setError('');
+                    // SweetAlert Here 
+                    let timerInterval;
+                    Swal.fire({
+                        title: `Check ${email}`,
+                        html: "Password Reset email sent in <b></b> milliseconds.",
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            const timer = Swal.getPopup().querySelector("b");
+                            timerInterval = setInterval(() => {
+                                timer.textContent = `${Swal.getTimerLeft()}`;
+                            }, 100);
+                        },
+                        willClose: () => {
+                            clearInterval(timerInterval);
+                        }
+                    }).then((result) => {
+                        /* Read more about handling dismissals below */
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            //Alert Closed
+                        }
+                    });
+                    // SweetAlert Ends Here 
+                })
+                .catch(error => {
+                    setError(`${error.message}`)
+                })
+        }
     }
 
     const handleGoogleLogin = () => {
@@ -43,7 +86,7 @@ const Login = () => {
             .then(result => {
                 const newUser = result.user;
                 const userData = { name: newUser.displayName, email: newUser.email, role: 'user' };
-                fetch('https://contact-management-server-theta.vercel.app/manager', {
+                fetch('https://contact-management-server-theta.vercel.app/users', {
                     method: "POST",
                     headers:
                     {
@@ -82,7 +125,7 @@ const Login = () => {
                             <div>
                                 <label className='font-semibold'>Password</label><br />
                                 <input {...register("password", { required: true })} placeholder='Enter Your Password' className='w-full border p-2 rounded-md' type="password" id="password" />
-                                <p className='text-xs text-blue-500 hover:underline cursor-pointer my-0.5'>Forget Password?</p>
+                                <span onClick={handleForgetPassword} className='text-xs text-blue-500 hover:underline cursor-pointer my-0.5'>Forget Password?</span>
                                 {errors.password?.type === 'required' && <span className='text-sm text-red-500 py-0.5'>This field is required!</span>}
                             </div>
                             <div className='flex flex-col'>

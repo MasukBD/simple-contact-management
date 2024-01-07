@@ -31,7 +31,7 @@ const Register = () => {
             .then(result => {
                 const newUser = result.user;
                 updateProfile(newUser, { displayName: data.name ? data.name : 'No name' })
-                fetch('https://contact-management-server-theta.vercel.app/manager', {
+                fetch('https://contact-management-server-theta.vercel.app/users', {
                     method: "POST",
                     headers:
                     {
@@ -85,7 +85,7 @@ const Register = () => {
             .then(result => {
                 const newUser = result.user;
                 const userData = { name: newUser.displayName, email: newUser.email, role: 'user' };
-                fetch('https://contact-management-server-theta.vercel.app/manager', {
+                fetch('https://contact-management-server-theta.vercel.app/users', {
                     method: "POST",
                     headers:
                     {
